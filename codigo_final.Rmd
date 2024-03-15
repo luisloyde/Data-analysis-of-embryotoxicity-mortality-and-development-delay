@@ -1,5 +1,5 @@
 ---
-title: "Data analysis of embryotoxicity (letality and development delay)"
+title: "Data analysis of embryotoxicity (mortality and development delay)"
 output:
   html_document:
     df_print: paged
@@ -8,7 +8,7 @@ editor_options:
   chunk_output_type: inline
 ---
 
-This is an script where ...
+This is an script where data of mortality and General Morphological Scores are analyzed.
 
 Loading packages and cleaning environment.
 
@@ -19,10 +19,10 @@ library(FSA)
 library(PMCMRplus)
 library(dplyr)
 library(plotrix)
-rm(list = ls())
+rm(list = ls()) #clean the outputs
 ```
 
-# Embrioletality
+# Embriomortality
 
 Loading data for calculating NOAEL & LOAEL. Then it is filtered because the concentrations used are different in each one.
 
