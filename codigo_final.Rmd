@@ -1,0 +1,1702 @@
+---
+title: "Data analysis of embryotoxicity (letality and development delay)"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+editor_options:
+  chunk_output_type: inline
+---
+
+This is an script where ...
+
+Loading packages and cleaning environment.
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(FSA)
+library(PMCMRplus)
+library(dplyr)
+library(plotrix)
+rm(list = ls())
+```
+
+# Embrioletality
+
+Loading data for calculating NOAEL & LOAEL. Then it is filtered because the concentrations used are different in each one.
+
+```{r}
+database <- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Embriotoxicidad sedimento y agua poro_R.xlsx",range="A1:I31") #this shall be changed in every PC
+sed_14 <- database %>% filter(concentracion==0 | concentracion==12.5 | concentracion==25 | concentracion==50 | concentracion==75 | concentracion==100) %>% select(concentracion,muertos_sedimento_P1,muertos_sedimento_P4)
+
+sed_23 <- database %>% filter(concentracion==0 | concentracion==2.08 | concentracion==4.17 | concentracion==8.33 | concentracion==12.5 | concentracion==16.67) %>% select(concentracion,muertos_sedimento_P2,muertos_sedimento_P3)
+
+aguaporo <- database %>% filter(concentracion==0 | concentracion==12.5 | concentracion==25 | concentracion==50 | concentracion==75 | concentracion==100) %>% select(concentracion,muertos_aguaporo_P1,muertos_aguaporo_P2,muertos_aguaporo_P3,muertos_aguaporo_P4)
+```
+
+## Sediment
+
+### Point 1
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(sed_14$muertos_sedimento_P1)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(sed_14$muertos_sedimento_P1~sed_14$concentracion, data=sed_14)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+sed_14[,"concentracion"] <- lapply(sed_14[, "concentracion"], as.factor)
+dunnettTest(sed_14$muertos_sedimento_P1~sed_14$concentracion, data=sed_14)
+```
+
+### Point 4
+
+We work with point 4 because the concentrations used. Later, we will work with the data of point 2 and 3. We proceed the same way that before.
+
+```{r}
+result.shapiro<-shapiro.test(sed_14$muertos_sedimento_P4)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(sed_14$muertos_sedimento_P4~sed_14$concentracion, data=sed_14)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+sed_14[,"concentracion"] <- lapply(sed_14[, "concentracion"], as.factor)
+dunnettTest(sed_14$muertos_sedimento_P4~sed_14$concentracion, data=sed_14)
+```
+
+### Point 2
+
+We proceed the same way that before. Now for point 2 and 3.
+
+```{r}
+result.shapiro<-shapiro.test(sed_23$muertos_sedimento_P2)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(sed_23$muertos_sedimento_P2~sed_23$concentracion, data=sed_23)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+sed_23[,"concentracion"] <- lapply(sed_23[, "concentracion"], as.factor)
+dunnettTest(sed_23$muertos_sedimento_P2~sed_23$concentracion, data=sed_23)
+```
+
+### Point 3
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(sed_23$muertos_sedimento_P3)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(sed_23$muertos_sedimento_P3~sed_23$concentracion, data=sed_23)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+sed_23[,"concentracion"] <- lapply(sed_23[, "concentracion"], as.factor)
+dunnettTest(sed_23$muertos_sedimento_P3~sed_23$concentracion, data=sed_23)
+```
+
+## Pore water
+
+### Point 1
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(aguaporo$muertos_aguaporo_P1)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Bartlett's test for testing if samples have equal variances.
+
+```{r}
+result.bartlett <- bartlett.test(aguaporo$muertos_aguaporo_P1,aguaporo$concentracion)
+if (result.bartlett$p.value > 0.05){
+  print('homoscedastic data')
+} else {
+  print('non-homoscedastic data')
+}
+```
+
+Since the data does not have homogeneity of variance, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(aguaporo$muertos_aguaporo_P1~aguaporo$concentracion, data=aguaporo)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different pore water concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+aguaporo[,"concentracion"] <- lapply(aguaporo[, "concentracion"], as.factor)
+dunnettTest(aguaporo$muertos_aguaporo_P1~aguaporo$concentracion, data=aguaporo)
+```
+
+### Point 2
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(aguaporo$muertos_aguaporo_P2)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(aguaporo$muertos_aguaporo_P2~aguaporo$concentracion, data=aguaporo)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different pore water concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+aguaporo[,"concentracion"] <- lapply(aguaporo[, "concentracion"], as.factor)
+dunnettTest(aguaporo$muertos_aguaporo_P2~aguaporo$concentracion, data=aguaporo)
+```
+
+### Point 3
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(aguaporo$muertos_aguaporo_P3)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Bartlett's test for testing if samples have equal variances.
+
+```{r}
+result.bartlett <- bartlett.test(aguaporo$muertos_aguaporo_P3,aguaporo$concentracion)
+if (result.bartlett$p.value > 0.05){
+  print('homoscedastic data')
+} else {
+  print('non-homoscedastic data')
+}
+```
+
+Since the data does not have homogeneity of variance, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(aguaporo$muertos_aguaporo_P3~aguaporo$concentracion, data=aguaporo)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different pore water concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+aguaporo[,"concentracion"] <- lapply(aguaporo[, "concentracion"], as.factor)
+dunnettTest(aguaporo$muertos_aguaporo_P3~aguaporo$concentracion, data=aguaporo)
+```
+
+### Point 4
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(aguaporo$muertos_aguaporo_P4)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Bartlett's test for testing if samples have equal variances.
+
+```{r}
+result.bartlett <- bartlett.test(aguaporo$muertos_aguaporo_P4,aguaporo$concentracion)
+if (result.bartlett$p.value > 0.05){
+  print('homoscedastic data')
+} else {
+  print('non-homoscedastic data')
+}
+```
+
+Since the data does not have homogeneity of variance, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(aguaporo$muertos_aguaporo_P4~aguaporo$concentracion, data=aguaporo)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+aguaporo[,"concentracion"] <- lapply(aguaporo[, "concentracion"], as.factor)
+dunnettTest(aguaporo$muertos_aguaporo_P4~aguaporo$concentracion, data=aguaporo)
+```
+
+# LC50 & LC20
+
+In this section, we will use the package ecotox for calculating lethal concentration 50 with logit and probit models.
+
+## Sediment
+
+```{r}
+library(ecotox)
+lc_sed_14<-sed_14
+lc_sed_14<-transform(lc_sed_14,concentracion=as.numeric(as.character(concentracion)))
+lc_sed_14<-cbind(lc_sed_14,total=100)
+
+lc_sed_23<-sed_23
+lc_sed_23<-transform(lc_sed_23,concentracion=as.numeric(as.character(concentracion)))
+lc_sed_23<-cbind(lc_sed_23,total=100)
+```
+
+### Point 1
+
+```{r}
+LC_logit((muertos_sedimento_P1/total)~log10(concentracion),p=c(50),data=lc_sed_14[lc_sed_14$concentracion!=0,],weights=total)
+LC_probit((muertos_sedimento_P1/total)~log10(concentracion),p=c(50),data=lc_sed_14[lc_sed_14$concentracion!=0,],weights=total)
+```
+
+### Point 4
+
+```{r}
+LC_logit((muertos_sedimento_P4/total)~log10(concentracion),p=c(50),data=lc_sed_14[lc_sed_14$concentracion!=0,],weights=total)
+LC_probit((muertos_sedimento_P4/total)~log10(concentracion),p=c(50),data=lc_sed_14[lc_sed_14$concentracion!=0,],weights=total)
+```
+
+### Point 2
+
+```{r}
+LC_logit((muertos_sedimento_P2/total)~log10(concentracion),p=c(50),data=lc_sed_23[lc_sed_23$concentracion!=0,],weights=total)
+LC_probit((muertos_sedimento_P2/total)~log10(concentracion),p=c(50),data=lc_sed_23[lc_sed_23$concentracion!=0,],weights=total)
+```
+
+### Point 3
+
+```{r}
+LC_logit((muertos_sedimento_P3/total)~log10(concentracion),p=c(50),data=lc_sed_23[lc_sed_23$concentracion!=0,],weights=total)
+LC_probit((muertos_sedimento_P3/total)~log10(concentracion),p=c(50),data=lc_sed_23[lc_sed_23$concentracion!=0,],weights=total)
+```
+
+## Pore water
+
+```{r}
+lc_aguaporo<-aguaporo
+lc_aguaporo<-transform(lc_aguaporo,concentracion=as.numeric(as.character(concentracion)))
+lc_aguaporo<-cbind(lc_aguaporo,total=100)
+```
+
+### Point 1
+
+```{r}
+LC_logit((muertos_aguaporo_P1/total)~log10(concentracion),p=c(50),data=lc_aguaporo[lc_aguaporo$concentracion!=0,],weights=total)
+LC_probit((muertos_aguaporo_P1/total)~log10(concentracion),p=c(50),data=lc_aguaporo[lc_aguaporo$concentracion!=0,],weights=total)
+```
+
+### Point 2
+
+```{r}
+LC_logit((muertos_aguaporo_P2/total)~log10(concentracion),p=c(50),data=lc_aguaporo[lc_aguaporo$concentracion!=0,],weights=total)
+LC_probit((muertos_aguaporo_P2/total)~log10(concentracion),p=c(50),data=lc_aguaporo[lc_aguaporo$concentracion!=0,],weights=total)
+```
+
+### Point 3
+
+```{r}
+LC_logit((muertos_aguaporo_P3/total)~log10(concentracion),p=c(50),data=lc_aguaporo[lc_aguaporo$concentracion!=0,],weights=total)
+LC_probit((muertos_aguaporo_P3/total)~log10(concentracion),p=c(50),data=lc_aguaporo[lc_aguaporo$concentracion!=0,],weights=total)
+```
+
+### Point 4
+
+```{r}
+LC_logit((muertos_aguaporo_P4/total)~log10(concentracion),p=c(50),data=lc_aguaporo[lc_aguaporo$concentracion!=0,],weights=total)
+LC_probit((muertos_aguaporo_P4/total)~log10(concentracion),p=c(50),data=lc_aguaporo[lc_aguaporo$concentracion!=0,],weights=total)
+```
+
+# Teratogenesis
+
+Loading data for calculating significant differences between the General Morphological Score (GMS) induced by pore water and sediment.
+
+```{r}
+gmisedimento<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", sheet="GMI Sedimento", range="A1:F301") #this shall be changed in every PC
+gmiaguaporo<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", sheet="GMI Agua poro", range="A1:F301") #this shall be changed in every PC
+```
+
+## Differences between control treatment and exposed treatment at different time
+
+### Sediment
+
+#### 12 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmisedimento$`12 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmisedimento$'12 h'~gmisedimento$Punto, data=gmisedimento)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+gmisedimento[,"Punto"] <- lapply(gmisedimento[, "Punto"], as.factor)
+dunnTest(gmisedimento$'12 h'~gmisedimento$Punto,data = gmisedimento,method='none')
+```
+
+#### 24 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmisedimento$`24 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmisedimento$'24 h'~gmisedimento$Punto, data=gmisedimento)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+gmisedimento[,"Punto"] <- lapply(gmisedimento[, "Punto"], as.factor)
+dunnTest(gmisedimento$'24 h'~gmisedimento$Punto,data = gmisedimento,method='none')
+```
+
+#### 48 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmisedimento$`48 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmisedimento$'48 h'~gmisedimento$Punto, data=gmisedimento)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+gmisedimento[,"Punto"] <- lapply(gmisedimento[, "Punto"], as.factor)
+dunnTest(gmisedimento$'48 h'~gmisedimento$Punto,data = gmisedimento,method='none')
+```
+
+#### 72 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmisedimento$`72 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmisedimento$'72 h'~gmisedimento$Punto, data=gmisedimento)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+gmisedimento[,"Punto"]<-lapply(gmisedimento[,"Punto"],as.factor)
+dunnTest(gmisedimento$'48 h'~gmisedimento$Punto,data=gmisedimento,method='none')
+```
+
+#### 96 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmisedimento$`96 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmisedimento$'96 h'~gmisedimento$Punto, data=gmisedimento)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+gmisedimento[,"Punto"] <- lapply(gmisedimento[, "Punto"], as.factor)
+dunnTest(gmisedimento$'96 h'~gmisedimento$Punto,data = gmisedimento,method='none')
+```
+
+### Pore water
+
+#### 12 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmiaguaporo$`12 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmiaguaporo$'12 h'~gmiaguaporo$Punto, data=gmiaguaporo)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+gmiaguaporo[,"Punto"] <- lapply(gmiaguaporo[, "Punto"], as.factor)
+dunnTest(gmiaguaporo$'12 h'~gmiaguaporo$Punto,data = gmiaguaporo,method='none')
+```
+
+#### 24 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmiaguaporo$`24 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmiaguaporo$'24 h'~gmiaguaporo$Punto, data=gmiaguaporo)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+gmiaguaporo[,"Punto"] <- lapply(gmiaguaporo[, "Punto"], as.factor)
+dunnTest(gmiaguaporo$'24 h'~gmiaguaporo$Punto,data = gmiaguaporo,method='none')
+```
+
+#### 48 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmiaguaporo$`48 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmiaguaporo$'48 h'~gmiaguaporo$Punto, data=gmiaguaporo)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We did not obtain significant differences between the mortality at different sediment concentrations.
+
+#### 72 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmiaguaporo$`72 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmiaguaporo$'72 h'~gmiaguaporo$Punto, data=gmiaguaporo)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We do not obtain significant differences between the mortality at different sediment concentrations.
+
+#### 96 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmiaguaporo$`96 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.kruskal<-kruskal.test(gmiaguaporo$'96 h'~gmiaguaporo$Punto, data=gmiaguaporo)
+if (result.kruskal$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+```
+
+We obtain significant differences between the mortality at different sediment concentrations. So, we apply a post hoc test (Dunn's test).
+
+```{r}
+gmiaguaporo[,"Punto"] <- lapply(gmiaguaporo[, "Punto"], as.factor)
+dunnTest(gmiaguaporo$'96 h'~gmiaguaporo$Punto,data = gmiaguaporo,method='none')
+```
+
+## Differences between sediment and pore water at different times
+
+Loading the data needed for estimating differences between the GMI in sediment and pore water.
+
+```{r}
+gmiaguaporo$Punto=paste0(gmiaguaporo$Punto," Agua poro")
+gmisedimento$Punto=paste0(gmisedimento$Punto," Sedimento")
+gmi_agua_sed<-merge.data.frame(gmiaguaporo,gmisedimento, all.x=TRUE,all.y=TRUE)
+```
+
+```{r}
+gmi_agua_sed_T<-gmi_agua_sed[1:120,]
+gmi_agua_sed_P1<-gmi_agua_sed[121:240,]
+gmi_agua_sed_P2<-gmi_agua_sed[241:360,]
+gmi_agua_sed_P3<-gmi_agua_sed[361:480,]
+gmi_agua_sed_P4<-gmi_agua_sed[481:600,]
+```
+
+### P1
+
+#### 12 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P1$`12 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Kruskal's test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P1$'12 h'~gmi_agua_sed_P1$Punto, data=gmi_agua_sed_P1)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 24 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P1$`24 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P1$'24 h'~gmi_agua_sed_P1$Punto, data=gmi_agua_sed_P1)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 48 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P1$`48 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P1$'48 h'~gmi_agua_sed_P1$Punto, data=gmi_agua_sed_P1)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 72 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P1$`72 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P1$'72 h'~gmi_agua_sed_P1$Punto, data=gmi_agua_sed_P1)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 96 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P1$`96 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P1$'96 h'~gmi_agua_sed_P1$Punto, data=gmi_agua_sed_P1)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+### P2
+
+#### 12 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P2$`12 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P2$'12 h'~gmi_agua_sed_P2$Punto, data=gmi_agua_sed_P2)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 24 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P2$`24 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P2$'24 h'~gmi_agua_sed_P2$Punto, data=gmi_agua_sed_P2)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 48 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P2$`48 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P2$'48 h'~gmi_agua_sed_P2$Punto, data=gmi_agua_sed_P2)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 72 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P2$`72 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P2$'72 h'~gmi_agua_sed_P2$Punto, data=gmi_agua_sed_P2)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 96 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P2$`96 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P2$'96 h'~gmi_agua_sed_P2$Punto, data=gmi_agua_sed_P2)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+### P3
+
+#### 12 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P3$`12 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P3$'12 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 24 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P3$`24 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P3$'24 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 48 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P3$`48 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P3$'48 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 72 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P3$`72 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P3$'72 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 96 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P3$`96 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P3$'96 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+### P4
+
+#### 12 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P4$`12 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P4$'12 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 24 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P4$`24 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P4$'24 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 48 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P4$`48 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P4$'48 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 72 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P4$`72 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P4$'72 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 96 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_P4$`96 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_P4$'96 h'~gmi_agua_sed_P3$Punto, data=gmi_agua_sed_P3)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+### Control
+
+#### 12 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_T$`12 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_T$'12 h'~gmi_agua_sed_T$Punto, data=gmi_agua_sed_T)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 24 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_T$`24 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_T$'24 h'~gmi_agua_sed_T$Punto, data=gmi_agua_sed_T)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 48 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_T$`48 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_T$'48 h'~gmi_agua_sed_T$Punto, data=gmi_agua_sed_T)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 72 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_T$`72 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_T$'72 h'~gmi_agua_sed_T$Punto, data=gmi_agua_sed_T)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+#### 96 hours
+
+Shapiro's test for testing normality.
+
+```{r}
+result.shapiro<-shapiro.test(gmi_agua_sed_T$`96 h`)
+if (result.shapiro$p.value > 0.05){
+  print('normal distribution')
+} else {
+  print('non-normal distribution')
+}
+```
+
+Since the data does not have a normal distribution, then we applied a non parametric test (Mann-Whitney test).
+
+```{r}
+result.wilcox<-wilcox.test(gmi_agua_sed_T$'96 h'~gmi_agua_sed_T$Punto, data=gmi_agua_sed_T)
+if (result.wilcox$p.value > 0.05){
+  print('no significant differences')
+} else {
+  print('significant differences')
+}
+result.wilcox$p.value
+```
+
+# Graphics
+
+## Embrioletality
+
+### Reshaping data
+
+```{r}
+sed_pivot<-database[,1:5]
+colnames(sed_pivot)<-c("conc","P4_s","P3_s","P2_s","P1_s")
+sed_pivot<-pivot_longer(sed_pivot,!conc,names_to = "Punto",values_to = "Muertos")
+
+agua_pivot<-database[,c(1,6:9)]
+colnames(agua_pivot)<-c("conc","P4_a","P3_a","P2_a","P1_a")
+agua_pivot<-pivot_longer(agua_pivot,!conc,names_to="Punto",values_to="Muertos")
+```
+
+```{r}
+sed_mean<-sed_pivot %>% group_by(Punto,conc) %>%
+  summarize(promedio=mean(Muertos, na.rm=TRUE),stderror=std.error(Muertos,na.rm=TRUE)) %>% 
+  cbind(Matriz="Sedimento")
+agua_mean<-agua_pivot %>% group_by(Punto,conc) %>%
+  summarize(promedio=mean(Muertos, na.rm=TRUE),stderror=std.error(Muertos, na.rm=TRUE)) %>%
+  cbind(Matriz="Agua poro")
+
+sed_agua_mean<-rbind(sed_mean,agua_mean)
+```
+
+```{r}
+sed_pivot<-database[,1:5]
+colnames(sed_pivot)<-c("conc","P4","P3","P2","P1")
+sed_pivot<-pivot_longer(sed_pivot,!conc,names_to = "Punto",values_to = "Muertos") %>%
+  cbind(Matriz="Sedimento")
+
+agua_pivot<-database[,c(1,6:9)]
+colnames(agua_pivot)<-c("conc","P4","P3","P2","P1")
+agua_pivot<-pivot_longer(agua_pivot,!conc,names_to="Punto",values_to="Muertos")%>%
+  cbind(Matriz="Agua poro")
+
+sed_agua_pivot<-rbind(sed_pivot,agua_pivot)
+
+sed_mean<-sed_pivot %>% group_by(Punto,conc) %>%
+  summarize(promedio=mean(Muertos, na.rm=TRUE),stderror=std.error(Muertos,na.rm=TRUE))%>%
+  cbind(Matriz="Sedimento")
+agua_mean<-agua_pivot %>% group_by(Punto,conc) %>%
+  summarize(promedio=mean(Muertos, na.rm=TRUE),stderror=std.error(Muertos, na.rm=TRUE))%>%
+  cbind(Matriz="Agua poro")
+
+sed_agua_mean<-rbind(sed_mean,agua_mean)
+```
+
+```{r}
+t1<-data.frame(Punto="C",
+               conc=100,
+               promedio=0.00000,
+               stderror=0.0000,
+               Matriz="Sedimento")
+sed_mean<-rbind(sed_mean,t1)
+
+t2<-data.frame(Punto="C",
+               conc=100,
+               promedio=5,
+               stderror=0.0000,
+               Matriz="Agua poro")
+agua_mean<-rbind(agua_mean,t2)
+```
+
+### Labeling significant differences
+
+```{r}
+mortalidad_sedimento<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "mortalidad_sedimento")
+mortalidad_agua<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "mortalidad_aguaporo")
+
+sed_mean$diff<-mortalidad_sedimento$diff
+agua_mean$diff<-mortalidad_agua$diff
+```
+
+### Relabeling groups
+
+```{r}
+names<-c(C='C',
+         P1='P1 (NM)',
+         P2='P2 (RS)',
+         P3='P3 (RT)',
+         P4='P4 (VM)') #changing names
+```
+
+### Bar
+
+#### Sediment
+
+```{r}
+p1<-ggplot(sed_mean, aes(x=factor(conc), y=promedio, fill=Punto))+
+  geom_col(position=position_dodge())+
+  theme(axis.line = element_line(colour = "black"))+
+  geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),position=position_dodge(),alpha=0.5)+
+  xlab("Concentración de sedimento (%)")+
+  ylab("Mortalidad promedio (%)")+
+  ggtitle("Mortalidad promedio a diferentes concentraciones de sedimento")+
+  facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
+  scale_fill_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RS)","P4 (VM)"))+
+#  scale_y_continuous(breaks = seq(0, 125, by = 25))+
+#  ylim(0,120)+
+  scale_y_continuous(limits = c(0, 105), breaks = c(0,25,50,75,100))+
+  geom_text(aes(label=diff),size=4,hjust=0.5,vjust=-0.5,color="black")+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10,angle = 45,hjust=1))+
+  theme(legend.position = "bottom")+
+  theme(legend.title=element_blank())
+p1
+ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/mortalidad_sedimento_barras.png",width=1800,height=1200,units="px",dpi=200)
+```
+
+#### Pore water
+
+```{r}
+p2<-ggplot(agua_mean, aes(x=factor(conc), y=promedio, fill=Punto))+
+  geom_col(position=position_dodge())+
+  theme(axis.line = element_line(colour = "black"))+
+  geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),position=position_dodge(),alpha=0.5)+
+  xlab("Concentración de agua poro (%)")+
+  ylab("Mortalidad promedio (%)")+
+  ggtitle("Mortalidad promedio a diferentes concentraciones de agua poro")+
+  facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
+  scale_fill_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RS)","P4 (VM)"))+
+#  scale_y_continuous(breaks = seq(0, 125, by = 25))+
+#  ylim(0,120)+
+  scale_y_continuous(limits = c(0, 105), breaks = c(0,25,50,75,100))+
+  geom_text(aes(label=diff),size=4,hjust=0.5,vjust=-0.5,color="black")+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10,angle = 45,hjust=1))+
+  theme(legend.position = "bottom")+
+  theme(legend.title=element_blank())
+p2
+ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/mortalidad_aguaporo_barras.png",width=1800,height=1200,units="px",dpi=200)
+```
+
+### Line (not used)
+
+#### Sediment
+
+```{r}
+p<-ggplot(sed_mean[!is.na(sed_mean$promedio),], aes(x=factor(conc), y=promedio, colour=Punto,group=Punto))+
+  geom_point(size=2)+
+  geom_line()+
+  theme(axis.line = element_line(colour = "black"))+
+  geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),position=position_dodge(),alpha=0.5)+
+  xlab("Concentración de sedimento (%)")+
+  ylab("Mortalidad promedio (%)")+
+  ggtitle("Mortalidad promedio a diferentes concentraciones de sedimento")+
+  facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
+  scale_fill_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RS)","P4 (VM)"))+
+#  ylim(0,120)+
+  scale_y_continuous(breaks = seq(0, 125, by = 25))+
+#  ylim(0,120)+
+  geom_text(aes(label=diff),size=4,hjust=0.5,vjust=-0.5,color="black")+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 7.5,angle = 45))
+p
+```
+
+#### Pore water
+
+```{r}
+p<-ggplot(agua_mean[!is.na(agua_mean$promedio),], aes(x=factor(conc), y=promedio, colour=Punto,group=Punto))+
+  geom_point(size=2)+
+  geom_line()+
+  theme(axis.line = element_line(colour = "black"))+
+  geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),position=position_dodge(),alpha=0.5)+
+  xlab("Concentración de agua poro (%)")+
+  ylab("Mortalidad promedio (%)")+
+  ggtitle("Mortalidad promedio a diferentes concentraciones de agua poro")+
+  facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
+  scale_fill_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RS)","P4 (VM)"))+
+#  ylim(0,120)+
+  scale_y_continuous(breaks = seq(0, 125, by = 25))+
+#  ylim(0,120)+
+  geom_text(aes(label=diff),size=4,hjust=0.5,vjust=-0.5,color="black")+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 7.5,angle = 45))
+p
+```
+
+## GMS
+
+### Reshaping data
+
+```{r}
+gmisedimento<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", shee="GMI Sedimento", range="A1:F301")
+gmiaguaporo<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", shee="GMI Agua poro", range="A1:F301")
+
+gmised_pivot<-pivot_longer(gmisedimento,!Punto,names_to = "Hora",values_to="GMI") %>% cbind(Matriz="Sedimento")
+gmised_mean<-gmised_pivot %>% group_by(Punto,Hora) %>%
+  summarize(promedio=mean(GMI, na.rm=TRUE),stderror=std.error(GMI, na.rm=TRUE)) %>%
+  cbind(Matriz="Sedimento")
+
+gmiagua_pivot<-pivot_longer(gmiaguaporo,!Punto,names_to = "Hora",values_to="GMI") %>% cbind(Matriz="Agua poro")
+gmiagua_mean<-gmiagua_pivot %>% group_by(Punto,Hora) %>%
+  summarize(promedio=mean(GMI, na.rm=TRUE),stderror=std.error(GMI, na.rm=TRUE)) %>%
+  cbind(Matriz="Agua poro")
+
+gmi_sed_agua_pivot<-rbind(gmised_pivot,gmiagua_pivot)
+gmi_sed_agua_mean<-rbind(gmised_mean,gmiagua_mean)
+```
+
+### Labeling significant differences
+
+```{r}
+#esto se usará en GMS
+gms_sed_agua<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx",sheet="gms_sed_agua")
+gms_sed<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "gms_sed", 
+    range = "A1:C26")
+gms_agua<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "gms_agua", 
+    range = "A1:C26")
+gmi_sed_agua_mean$diff<-gms_sed_agua$diff
+gmised_mean$diff<-gms_sed$diff
+gmiagua_mean$diff<-gms_agua$diff
+```
+
+### Line
+
+#### Both
+
+```{r}
+p<-ggplot(gmi_sed_agua_mean, aes(x = as.factor(Hora), y = promedio, colour=Punto, group=Matriz,shape=Matriz))+
+  geom_point(size=2)+
+  geom_line()+
+  geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),alpha=1,width=0.2)+
+  xlab("Hora")+
+  ylab("PMG")+
+  ggtitle("Puntaje Morfológico General (PMG) en sedimento y agua poro")+
+  theme(axis.line = element_line(colour = "black"))+
+  facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
+  scale_fill_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RT)","P4 (VM)"))+
+#  ylim(0,20)+
+  scale_y_continuous(breaks = seq(0,20, by=4))+
+#  ylim(0,20)+
+  geom_text(aes(label=diff),size=3,hjust=1,color="black")+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10,angle=45,hjust=1))+
+  theme(legend.position = "bottom")+
+  theme(legend.title = element_blank())
+p
+#ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_sedimento_aguaporo.png",width=1800,height=1200,units="px",dpi=200)
+```
+
+#### Sediment
+
+```{r}
+p3<-ggplot(gmised_mean, aes(x = as.factor(Hora), y = promedio, colour=Punto, group=Matriz))+
+  geom_point(size=2)+
+  geom_line()+
+  geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),alpha=1,width=0.2)+
+  xlab("Hora")+
+  ylab("PMG")+
+  ggtitle("Puntaje Morfológico General (PMG) en sedimento")+
+  theme(axis.line = element_line(colour = "black"))+
+  facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
+  scale_colour_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RT)","P4 (VM)"))+
+#  ylim(0,16)+
+#  scale_y_continuous(breaks = seq(0,16, by=4))+
+  scale_y_continuous(limits = c(0, 16), breaks = c(0,4,8,12,16))+
+  geom_text(aes(label=diff),size=3,hjust=0.5,vjust=-0.5,color="black")+
+  coord_cartesian(clip='off')+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10,angle=45,hjust=1))+
+  theme(legend.position = "bottom")+
+  theme(legend.title = element_blank())
+p3
+#ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_sedimento.png",width=1800,height=1200,units="px",dpi=200)
+```
+
+#### Pore water
+
+```{r}
+p4<-ggplot(gmiagua_mean, aes(x = as.factor(Hora), y = promedio, colour=Punto, group=Matriz))+
+  geom_point(size=2)+
+  geom_line()+
+  geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),alpha=1,width=0.2)+
+  xlab("Hora")+
+  ylab("PMG")+
+  ggtitle("Puntaje Morfológico General (PMG) en agua poro")+
+  theme(axis.line = element_line(colour = "black"))+
+  facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
+  scale_colour_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RT)","P4 (VM)"))+
+#  ylim(0,16)+
+#  scale_y_continuous(breaks = seq(0,16, by=4))+
+  scale_y_continuous(limits = c(0, 16), breaks = c(0,4,8,12,16))+
+  geom_text(aes(label=diff),size=3,hjust=0.5,vjust=-0.5,color="black")+
+  coord_cartesian(clip='off')+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10,angle=45,hjust=1))+
+  theme(legend.position = "bottom")+
+  theme(legend.title = element_blank())
+p4
+#ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_aguaporo.png",width=1800,height=1200,units="px",dpi=200)
+```
+
+Joining
+
+```{r}
+library(patchwork)
+p3+p4
+ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_sedimento_y_agua_poro.png",width=4200,height=2400,units="px",dpi=350)
+```
+
+# Run All
+
+```{r}
+#Use this chunk to run all ones above
+```
