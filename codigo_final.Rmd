@@ -27,7 +27,7 @@ rm(list = ls()) #clean the outputs
 Loading data for calculating NOAEL & LOAEL. Then it is filtered because the concentrations used are different in each one.
 
 ```{r}
-database <- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Embriotoxicidad sedimento y agua poro_R.xlsx",range="A1:I31") #this shall be changed in every PC
+database <- read_excel("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Data-analysis-of-embryotoxicity-mortality-and-development-delay-in-R/Embriotoxicidad sedimento y agua poro_R.xlsx",range="A1:I31") #this shall be changed in every PC
 sed_14 <- database %>% filter(concentracion==0 | concentracion==12.5 | concentracion==25 | concentracion==50 | concentracion==75 | concentracion==100) %>% select(concentracion,muertos_sedimento_P1,muertos_sedimento_P4)
 
 sed_23 <- database %>% filter(concentracion==0 | concentracion==2.08 | concentracion==4.17 | concentracion==8.33 | concentracion==12.5 | concentracion==16.67) %>% select(concentracion,muertos_sedimento_P2,muertos_sedimento_P3)
@@ -406,8 +406,8 @@ LC_probit((muertos_aguaporo_P4/total)~log10(concentracion),p=c(50),data=lc_aguap
 Loading data for calculating significant differences between the General Morphological Score (GMS) induced by pore water and sediment.
 
 ```{r}
-gmisedimento<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", sheet="GMI Sedimento", range="A1:F301") #this shall be changed in every PC
-gmiaguaporo<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", sheet="GMI Agua poro", range="A1:F301") #this shall be changed in every PC
+gmisedimento<- read_excel("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Data-analysis-of-embryotoxicity-mortality-and-development-delay-in-R/Teratogénesis_R.xlsx", sheet="GMI Sedimento", range="A1:F301") #this shall be changed in every PC
+gmiaguaporo<- read_excel("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Data-analysis-of-embryotoxicity-mortality-and-development-delay-in-R/Teratogénesis_R.xlsx", sheet="GMI Agua poro", range="A1:F301") #this shall be changed in every PC
 ```
 
 ## Differences between control treatment and exposed treatment at different time
@@ -1438,8 +1438,8 @@ agua_mean<-rbind(agua_mean,t2)
 ### Labeling significant differences
 
 ```{r}
-mortalidad_sedimento<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "mortalidad_sedimento")
-mortalidad_agua<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "mortalidad_aguaporo")
+mortalidad_sedimento<-read_excel("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Data-analysis-of-embryotoxicity-mortality-and-development-delay-in-R/p values.xlsx", sheet = "mortalidad_sedimento")
+mortalidad_agua<-read_excel("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Data-analysis-of-embryotoxicity-mortality-and-development-delay-in-R/p values.xlsx", sheet = "mortalidad_aguaporo")
 
 sed_mean$diff<-mortalidad_sedimento$diff
 agua_mean$diff<-mortalidad_agua$diff
@@ -1608,12 +1608,12 @@ p<-ggplot(gmi_sed_agua_mean, aes(x = as.factor(Hora), y = promedio, colour=Punto
   geom_point(size=2)+
   geom_line()+
   geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),alpha=1,width=0.2)+
-  xlab("Hora")+
-  ylab("PMG")+
-  ggtitle("Puntaje Morfológico General (PMG) en sedimento y agua poro")+
+  xlab("Hour")+
+  ylab("GMS")+
+  ggtitle("General Morphology Score (GMS) in sediment and pore water")+
   theme(axis.line = element_line(colour = "black"))+
   facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
-  scale_fill_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RT)","P4 (VM)"))+
+  scale_fill_discrete(name = "Treatment", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RT)","P4 (VM)"))+
 #  ylim(0,20)+
   scale_y_continuous(breaks = seq(0,20, by=4))+
 #  ylim(0,20)+
@@ -1626,7 +1626,8 @@ p<-ggplot(gmi_sed_agua_mean, aes(x = as.factor(Hora), y = promedio, colour=Punto
   theme(legend.position = "bottom")+
   theme(legend.title = element_blank())
 p
-#ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_sedimento_aguaporo.png",width=1800,height=1200,units="px",dpi=200)
+#ggsave("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Figuras/Gráficas/gms_sediment_porewater.png",width=1800,height=1200,units="px",dpi=200)
+
 ```
 
 #### Sediment
@@ -1636,12 +1637,12 @@ p3<-ggplot(gmised_mean, aes(x = as.factor(Hora), y = promedio, colour=Punto, gro
   geom_point(size=2)+
   geom_line()+
   geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),alpha=1,width=0.2)+
-  xlab("Hora")+
-  ylab("PMG")+
-  ggtitle("Puntaje Morfológico General (PMG) en sedimento")+
+  xlab("Hour")+
+  ylab("GMS")+
+  ggtitle("General Morphology Score (GMS) in sediment")+
   theme(axis.line = element_line(colour = "black"))+
   facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
-  scale_colour_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RT)","P4 (VM)"))+
+  scale_colour_discrete(name = "Treatment", labels = c("Control", "P1 (NM)", "P2 (SR)","P3 (TR)","P4 (VM)"))+
 #  ylim(0,16)+
 #  scale_y_continuous(breaks = seq(0,16, by=4))+
   scale_y_continuous(limits = c(0, 16), breaks = c(0,4,8,12,16))+
@@ -1655,7 +1656,7 @@ p3<-ggplot(gmised_mean, aes(x = as.factor(Hora), y = promedio, colour=Punto, gro
   theme(legend.position = "bottom")+
   theme(legend.title = element_blank())
 p3
-#ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_sedimento.png",width=1800,height=1200,units="px",dpi=200)
+#ggsave("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Figuras/Gráficas/gms_sediment.png",width=1800,height=1200,units="px",dpi=200)
 ```
 
 #### Pore water
@@ -1665,12 +1666,12 @@ p4<-ggplot(gmiagua_mean, aes(x = as.factor(Hora), y = promedio, colour=Punto, gr
   geom_point(size=2)+
   geom_line()+
   geom_errorbar(aes(ymin=promedio-stderror, ymax=promedio+stderror),alpha=1,width=0.2)+
-  xlab("Hora")+
-  ylab("PMG")+
-  ggtitle("Puntaje Morfológico General (PMG) en agua poro")+
+  xlab("Hour")+
+  ylab("GMS")+
+  ggtitle("General Morphology Score (GMS) in pore water")+
   theme(axis.line = element_line(colour = "black"))+
   facet_grid(~Punto,scales = "free_x", space = "free_x",switch = "x",labeller=as_labeller(names))+
-  scale_colour_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (RS)","P3 (RT)","P4 (VM)"))+
+  scale_colour_discrete(name = "Treatment", labels = c("Control", "P1 (NM)", "P2 (SR)","P3 (TR)","P4 (VM)"))+
 #  ylim(0,16)+
 #  scale_y_continuous(breaks = seq(0,16, by=4))+
   scale_y_continuous(limits = c(0, 16), breaks = c(0,4,8,12,16))+
@@ -1684,7 +1685,7 @@ p4<-ggplot(gmiagua_mean, aes(x = as.factor(Hora), y = promedio, colour=Punto, gr
   theme(legend.position = "bottom")+
   theme(legend.title = element_blank())
 p4
-#ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_aguaporo.png",width=1800,height=1200,units="px",dpi=200)
+#ggsave("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Figuras/Gráficas/pmg_aguaporo.png",width=1800,height=1200,units="px",dpi=200)
 ```
 
 Joining
@@ -1692,7 +1693,7 @@ Joining
 ```{r}
 library(patchwork)
 p3+p4
-ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_sedimento_y_agua_poro.png",width=4200,height=2400,units="px",dpi=350)
+ggsave("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Figuras/Gráficas/gms_sediment_porewater.png",width=4200,height=2400,units="px",dpi=350)
 ```
 
 # Run All
