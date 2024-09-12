@@ -6,6 +6,7 @@ output:
   pdf_document: default
 editor_options:
   chunk_output_type: inline
+language: r
 ---
 
 This is an script where data of mortality and General Morphological Scores are analyzed.
@@ -1694,6 +1695,109 @@ Joining
 library(patchwork)
 p3+p4
 ggsave("~/Laptop Drive/Toxicología Acuática/Artículos/Resultados para artículo/Figuras/Gráficas/gms_sediment_porewater.png",width=4200,height=2400,units="px",dpi=350)
+ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_sedimento_y_agua_poro.png",width=4200,height=2400,units="px",dpi=350)
+```
+
+## Indexes of pollution
+
+```{r}
+indexes_1<-read_excel("~/Laptop Drive/Toxicología Acuática/Artículos/Evaluation of embryotoxicity/Resultados para artículo/Data-analysis-of-embryotoxicity-mortality-and-development-delay-in-R/Factor de contaminación.xlsx", n_max = 4)
+```
+
+```{r}
+indexes_2<-indexes_1[, c("Site", "EF Al", "EF Fe", "EF Hg", "EF Pb", "EF Cd", 
+                   "CF Al", "CF Fe", "CF Hg", "CF Pb", "CF Cd", "mCdeg")]
+indexes_3<-pivot_longer(indexes_2,cols=c(-"Site"),
+                      names_to = "temp",
+                      values_to = "value")
+indexes_4<- indexes_3 %>% mutate(
+  index= ifelse(temp== "mCdeg", "mCdeg", substr(temp, 1, 2)),
+  Metal= ifelse(temp== "mCdeg", "", substr(temp, nchar(temp) - 1, nchar(temp))))
+indexes<-select(indexes_4,-temp)
+
+indexes <- indexes %>%
+  mutate(Site = ifelse(Site == "P3 (TR)", "P3 (RT)", ifelse(Site == "P2 (SR)", "P2 (RS)", Site)))
+```
+
+```{r}
+CF<- subset(indexes, index == "CF")
+EF<- subset(indexes, index == "EF")
+mCdeg<- subset(indexes, index == "mCdeg")
+```
+
+```{r}
+EF_plot<- ggplot(EF, aes(x = Site, y = value, fill = Metal)) +
+  geom_col(position = position_dodge(width=0.8))+
+  geom_hline(yintercept = c(2, 5, 20), linetype = "dashed") +
+  annotate("text", x = 2.5, y = c(2, 5, 20), 
+           label = c("Enriquecimiento mínimo", "Enriquecimiento moderado","Enriquecimiento significativo"),
+           hjust = 0.5, vjust=3, color = "black", size = 3, fontface = "bold")+
+  theme(axis.line = element_line(colour="black"))+
+  xlab("Sitio")+
+  ylab("FE")+
+  ggtitle("Factor de enriquecimiento (FE)")+
+  scale_fill_discrete(name="Elemento",labels=c("Al","Cd","Fe","Hg","Pb"))+
+  guides(fill = guide_legend(ncol = 6))+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10))+
+  theme(legend.position = "bottom")+
+  theme(legend.title=element_blank())
+EF_plot
+```
+
+```{r}
+CF_plot<- ggplot(CF, aes(x = Site, y = value, fill = Metal)) +
+  geom_col(position = position_dodge(width=0.8))+
+  geom_hline(yintercept = c(1, 3, 6), linetype = "dashed") +
+  annotate("text", x = 2.5, y = c(1, 3, 6), 
+           label = c("Contaminación baja", "Contaminación moderada", "Contaminación considerable"),
+           hjust = 0.5, vjust=4, color = "black", size = 3, fontface = "bold") +
+  theme(axis.line = element_line(colour="black"))+
+  xlab("Sitio")+
+  ylab("FC")+
+  ggtitle("Factor de contaminación (FC)")+
+  scale_fill_discrete(name="Elemento",labels=c("Al","Cd","Fe","Hg","Pb"))+
+  guides(fill = guide_legend(ncol = 6))+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10))+
+  theme(legend.position = "bottom")+
+  theme(legend.title=element_blank())
+CF_plot
+```
+
+```{r}
+mCdeg_plot<- ggplot(mCdeg, aes(x = Site, y = value,fill=Metal)) +
+  geom_col(position = position_dodge(width=0.8),alpha=0.8)+
+  geom_hline(yintercept =1.5, linetype = "dashed") +
+  annotate("text", x = 2.5, y = 1.5, 
+           label = c("Muy baja contaminación"),
+           hjust = 0.5, vjust=2, color = "black", size = 3, fontface = "bold")+
+  scale_fill_brewer(name = "Elemento",palette = "Set1",labels=c("Elementos en conjunto"))+
+  theme(axis.line = element_line(colour="black"))+
+  xlab("Sitio")+
+  ylab(expression(FCM))+
+  ggtitle(expression(Factor~de~contaminación~modificado~(FCM)))+
+#  scale_fill_discrete(name="Metal",labels=c("Whole metals"))+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10))+
+  theme(legend.position = "bottom")+
+  theme(legend.title=element_blank())
+mCdeg_plot
+```
+
+```{r}
+library(patchwork)
+CF_plot+EF_plot+mCdeg_plot
+ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/indices.png",width=4200,height=2400,units="px",dpi=350)
 ```
 
 # Run All
