@@ -23,12 +23,16 @@ library(plotrix)
 rm(list = ls())
 ```
 
+```{r}
+setwd("G:/Otros ordenadores/Mi portátil/Laptop Drive/Toxicología Acuática/Artículos/Evaluation of embryotoxicity/Resultados para artículo/Código Github")
+```
+
 # Embriomortality
 
 Loading data for calculating NOAEL & LOAEL. Then it is filtered because the concentrations used are different in each one.
 
 ```{r}
-database <- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Embriotoxicidad sedimento y agua poro_R.xlsx",range="A1:I31") #this shall be changed in every PC
+database <- read_excel("Embriotoxicidad sedimento y agua poro_R.xlsx",range="A1:I31") #this shall be changed in every PC
 sed_14 <- database %>% filter(concentracion==0 | concentracion==12.5 | concentracion==25 | concentracion==50 | concentracion==75 | concentracion==100) %>% select(concentracion,muertos_sedimento_P1,muertos_sedimento_P4)
 
 sed_23 <- database %>% filter(concentracion==0 | concentracion==2.08 | concentracion==4.17 | concentracion==8.33 | concentracion==12.5 | concentracion==16.67) %>% select(concentracion,muertos_sedimento_P2,muertos_sedimento_P3)
@@ -407,8 +411,8 @@ LC_probit((muertos_aguaporo_P4/total)~log10(concentracion),p=c(50),data=lc_aguap
 Loading data for calculating significant differences between the General Morphological Score (GMS) induced by pore water and sediment.
 
 ```{r}
-gmisedimento<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", sheet="GMI Sedimento", range="A1:F301") #this shall be changed in every PC
-gmiaguaporo<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", sheet="GMI Agua poro", range="A1:F301") #this shall be changed in every PC
+gmisedimento<- read_excel("Teratogénesis_R.xlsx", sheet="GMI Sedimento", range="A1:F301") #this shall be changed in every PC
+gmiaguaporo<- read_excel("Teratogénesis_R.xlsx", sheet="GMI Agua poro", range="A1:F301") #this shall be changed in every PC
 ```
 
 ## Differences between control treatment and exposed treatment at different time
@@ -1439,8 +1443,8 @@ agua_mean<-rbind(agua_mean,t2)
 ### Labeling significant differences
 
 ```{r}
-mortalidad_sedimento<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "mortalidad_sedimento")
-mortalidad_agua<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "mortalidad_aguaporo")
+mortalidad_sedimento<-read_excel("p values.xlsx", sheet = "mortalidad_sedimento")
+mortalidad_agua<-read_excel("p values.xlsx", sheet = "mortalidad_aguaporo")
 
 sed_mean$diff<-mortalidad_sedimento$diff
 agua_mean$diff<-mortalidad_agua$diff
@@ -1456,7 +1460,7 @@ names<-c(C='C',
          P4='P4 (VM)') #changing names
 ```
 
-### Bar
+### Column
 
 #### Sediment
 
@@ -1482,7 +1486,7 @@ p1<-ggplot(sed_mean, aes(x=factor(conc), y=promedio, fill=Punto))+
   theme(legend.position = "bottom")+
   theme(legend.title=element_blank())
 p1
-ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/mortalidad_sedimento_barras.png",width=1800,height=1200,units="px",dpi=200)
+ggsave("mortalidad_sedimento_barras.png",width=1800,height=1200,units="px",dpi=200)
 ```
 
 #### Pore water
@@ -1509,7 +1513,7 @@ p2<-ggplot(agua_mean, aes(x=factor(conc), y=promedio, fill=Punto))+
   theme(legend.position = "bottom")+
   theme(legend.title=element_blank())
 p2
-ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/mortalidad_aguaporo_barras.png",width=1800,height=1200,units="px",dpi=200)
+ggsave("mortalidad_aguaporo_barras.png",width=1800,height=1200,units="px",dpi=200)
 ```
 
 ### Line (not used)
@@ -1569,8 +1573,8 @@ p
 ### Reshaping data
 
 ```{r}
-gmisedimento<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", shee="GMI Sedimento", range="A1:F301")
-gmiaguaporo<- read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Teratogénesis_R.xlsx", shee="GMI Agua poro", range="A1:F301")
+gmisedimento<- read_excel("Teratogénesis_R.xlsx", shee="GMI Sedimento", range="A1:F301")
+gmiaguaporo<- read_excel("Teratogénesis_R.xlsx", shee="GMI Agua poro", range="A1:F301")
 
 gmised_pivot<-pivot_longer(gmisedimento,!Punto,names_to = "Hora",values_to="GMI") %>% cbind(Matriz="Sedimento")
 gmised_mean<-gmised_pivot %>% group_by(Punto,Hora) %>%
@@ -1590,10 +1594,10 @@ gmi_sed_agua_mean<-rbind(gmised_mean,gmiagua_mean)
 
 ```{r}
 #esto se usará en GMS
-gms_sed_agua<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx",sheet="gms_sed_agua")
-gms_sed<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "gms_sed", 
+gms_sed_agua<-read_excel("p values.xlsx",sheet="gms_sed_agua")
+gms_sed<-read_excel("p values.xlsx", sheet = "gms_sed", 
     range = "A1:C26")
-gms_agua<-read_excel("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/p values.xlsx", sheet = "gms_agua", 
+gms_agua<-read_excel("p values.xlsx", sheet = "gms_agua", 
     range = "A1:C26")
 gmi_sed_agua_mean$diff<-gms_sed_agua$diff
 gmised_mean$diff<-gms_sed$diff
@@ -1693,13 +1697,87 @@ Joining
 ```{r}
 library(patchwork)
 p3+p4
-ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/pmg_sedimento_y_agua_poro.png",width=4200,height=2400,units="px",dpi=350)
+ggsave("pmg_sedimento_y_agua_poro.png",width=4200,height=2400,units="px",dpi=350)
+```
+
+## Morphological changes
+
+```{r}
+mc_sed<-read_excel("Teratogénesis_R.xlsx",sheet='Características sedimento')
+mc_agua<-read_excel("Teratogénesis_R.xlsx",sheet='Características agua poro')
+```
+
+### Reshaping data
+
+```{r}
+mc_sed_g <- mc_sed %>%
+  rowwise() %>%
+  mutate(P1 = mean(c_across(starts_with("P1")), na.rm = TRUE),
+         P1_es=sd(c_across(starts_with("P1")), na.rm = TRUE),
+         P2 = mean(c_across(starts_with("P2")), na.rm = TRUE),
+         P2_es=sd(c_across(starts_with("P2")), na.rm = TRUE),
+         P3 = mean(c_across(starts_with("P3")), na.rm = TRUE),
+         P3_es=sd(c_across(starts_with("P3")), na.rm = TRUE),
+         P4 = mean(c_across(starts_with("P4")), na.rm = TRUE),
+         P4_es=sd(c_across(starts_with("P4")), na.rm = TRUE),
+         C = mean(c_across(starts_with("C")), na.rm = TRUE),
+         C_es=sd(c_across(starts_with("C")), na.rm = TRUE)) %>%
+  select('Morphological change', P1,P1_es,P2,P2_es,P3,P3_es,P4,P4_es,C,C_es,Hour)
+
+mc_agua_g <- mc_agua %>%
+  rowwise() %>%
+  mutate(P1 = mean(c_across(starts_with("P1")), na.rm = TRUE),
+         P1_es=sd(c_across(starts_with("P1")), na.rm = TRUE),
+         P2 = mean(c_across(starts_with("P2")), na.rm = TRUE),
+         P2_es=sd(c_across(starts_with("P2")), na.rm = TRUE),
+         P3 = mean(c_across(starts_with("P3")), na.rm = TRUE),
+         P3_es=sd(c_across(starts_with("P3")), na.rm = TRUE),
+         P4 = mean(c_across(starts_with("P4")), na.rm = TRUE),
+         P4_es=sd(c_across(starts_with("P4")), na.rm = TRUE),
+         C = mean(c_across(starts_with("C")), na.rm = TRUE),
+         C_es=sd(c_across(starts_with("C")), na.rm = TRUE)) %>%
+  select('Morphological change', P1,P1_es,P2,P2_es,P3,P3_es,P4,P4_es,C,C_es,Hour)
+
+mc_sed_long <- mc_sed_g %>%
+  pivot_longer(cols = c(P1, P2, P3, P4, C), 
+               names_to = "Site", 
+               values_to = "Mean") %>%
+  pivot_longer(cols = c(P1_es, P2_es, P3_es, P4_es, C_es), 
+               names_to = "Error_var", 
+               values_to = "SE") %>%
+  select(!Error_var)
+
+mc_agua_long <- mc_agua_g %>%
+  pivot_longer(cols = c(P1, P2, P3, P4, C), 
+               names_to = "Site", 
+               values_to = "Mean") %>%
+  pivot_longer(cols = c(P1_es, P2_es, P3_es, P4_es, C_es), 
+               names_to = "Error_var", 
+               values_to = "SE") %>%
+  select(!Error_var)
+```
+
+### Bar
+
+```{r}
+
+
+# Crear la gráfica
+ggplot(mc_sed_long, aes(x = Mean, y = `Morphological change`, fill = Variable)) +
+  geom_col(position = position_dodge(width = 0.8)) + # Gráfico de columnas agrupadas
+  geom_errorbar(aes(xmin = Mean - SE, xmax = Mean + SE), 
+                width = 0.2, position = position_dodge(width = 0.8)) + # Barras de error
+  scale_y_discrete(limits = rev(levels(mc_sed_g$Hour))) + # Para ordenar las horas de mayor a menor en el eje y
+  labs(title = "Morphological Changes Over Time",
+       x = "Mean ± SE", 
+       y = "Morphological Change") +
+  theme_minimal() # Hacer la gráfica horizontal
 ```
 
 ## Indexes of pollution
 
 ```{r}
-indexes_1<-read_excel("~/Laptop Drive/Toxicología Acuática/Artículos/Evaluation of embryotoxicity/Resultados para artículo/Data-analysis-of-embryotoxicity-mortality-and-development-delay-in-R/Factor de contaminación.xlsx", n_max = 4)
+indexes_1<-read_excel("Factor de contaminación.xlsx", n_max = 4)
 ```
 
 ```{r}
@@ -1795,7 +1873,7 @@ mCdeg_plot
 ```{r}
 library(patchwork)
 CF_plot+EF_plot+mCdeg_plot
-ggsave("~/Laptop Drive/Toxicología Acuática/Tesis/Resultados/Figuras/Gráficas/indices.png",width=4200,height=2400,units="px",dpi=350)
+ggsave("indices.png",width=4200,height=2400,units="px",dpi=350)
 ```
 
 # Run All
