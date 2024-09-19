@@ -1486,7 +1486,7 @@ p1<-ggplot(sed_mean, aes(x=factor(conc), y=promedio, fill=Punto))+
   theme(legend.position = "bottom")+
   theme(legend.title=element_blank())
 p1
-ggsave("mortalidad_sedimento_barras.png",width=1800,height=1200,units="px",dpi=200)
+#ggsave("mortalidad_sedimento_barras.png",width=1800,height=1200,units="px",dpi=200)
 ```
 
 #### Pore water
@@ -1513,7 +1513,7 @@ p2<-ggplot(agua_mean, aes(x=factor(conc), y=promedio, fill=Punto))+
   theme(legend.position = "bottom")+
   theme(legend.title=element_blank())
 p2
-ggsave("mortalidad_aguaporo_barras.png",width=1800,height=1200,units="px",dpi=200)
+#ggsave("mortalidad_aguaporo_barras.png",width=1800,height=1200,units="px",dpi=200)
 ```
 
 ```{r}
@@ -1706,6 +1706,77 @@ p3+p4
 ggsave("Figure 3. General Morphology Score (GMS) in sediment and pore water.tif",width=3500,height=1500,units="px",dpi=300,compression="lzw")
 ```
 
+## Teratogenesis
+
+### Reshaping data
+
+```{r}
+data_terato_sed <- read_excel("Teratogénesis_R.xlsx", 
+    sheet = "Teratogenesis Sedimento", range = "A1:L6")
+data_terato_agua <- read_excel("Teratogénesis_R.xlsx", 
+    sheet = "Teratogenesis Agua poro", range = "A1:L6")
+
+terato_sed <- data_terato_sed %>%
+  pivot_longer(cols = -Sitio, names_to = "Malformacion", values_to = "Porcentaje") %>%
+  mutate(Sin_malformacion = 100 - Porcentaje)
+terato_agua <- data_terato_agua %>%
+  pivot_longer(cols = -Sitio, names_to = "Malformacion", values_to = "Porcentaje") %>%
+  mutate(Sin_malformacion = 100 - Porcentaje)
+```
+
+### Sediment
+
+```{r}
+terato_sed_plot<-ggplot(terato_sed, aes(x = Malformacion, y = Porcentaje, fill = Sitio)) +
+  geom_bar(stat = "identity", position = "dodge")+
+  theme(axis.line = element_line(colour="black"))+
+  xlab("Congenital malformation")+
+  ylab("Frequency (%)")+
+  ggtitle("Sediment")+
+  scale_fill_discrete(name="Sitio",labels=c("Control","P1 (NM)","P2 (SR)","P3 (TR)","P4 (VM)"))+
+  scale_y_continuous(limits = c(0, 10), breaks = c(0,2,4,6,8,10))+
+  guides(fill = guide_legend(ncol = 6))+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10))+
+  theme(axis.text = element_text(angle=0,hjust=0.5))+
+  theme(legend.position = "bottom")+
+  theme(legend.title = element_blank())+
+  coord_flip()
+terato_sed_plot
+```
+
+### Pore water
+
+```{r}
+terato_agua_plot<-ggplot(terato_agua, aes(x = Malformacion, y = Porcentaje, fill = Sitio)) +
+  geom_bar(stat = "identity", position = "dodge")+
+  theme(axis.line = element_line(colour="black"))+
+  xlab(NULL)+
+  ylab("Frequency (%)")+
+  ggtitle("Pore water")+
+  scale_fill_discrete(name="Sitio",labels=c("Control","P1 (NM)","P2 (SR)","P3 (TR)","P4 (VM)"))+
+  scale_y_continuous(limits = c(0, 10), breaks = c(0,2,4,6,8,10))+
+  guides(fill = guide_legend(ncol = 6))+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10))+
+  theme(axis.text.y = element_blank())+
+  theme(legend.position = "bottom")+
+  theme(legend.title = element_blank())+
+  coord_flip()
+terato_agua_plot
+```
+
+```{r}
+combined_plot <- (terato_sed_plot + terato_agua_plot) + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+ggsave("Figure n. Congenital malformations frequency.tif",width=3500,height=1500,units="px",dpi=300,compression="lzw")
+```
+
 ## Morphological changes
 
 ```{r}
@@ -1812,9 +1883,6 @@ indexes_4<- indexes_3 %>% mutate(
   index= ifelse(temp== "mCdeg", "mCdeg", substr(temp, 1, 2)),
   Metal= ifelse(temp== "mCdeg", "", substr(temp, nchar(temp) - 1, nchar(temp))))
 indexes<-select(indexes_4,-temp)
-
-indexes <- indexes %>%
-  mutate(Site = ifelse(Site == "P3 (TR)", "P3 (RT)", ifelse(Site == "P2 (SR)", "P2 (RS)", Site)))
 ```
 
 ```{r}
@@ -1825,7 +1893,7 @@ mCdeg<- subset(indexes, index == "mCdeg")
 
 ```{r}
 EF_plot<- ggplot(EF, aes(x = Site, y = value, fill = Metal)) +
-  geom_col(position = position_dodge(width=0.8))+
+  geom_col(position = position_dodge())+
   geom_hline(yintercept = c(2, 5, 20), linetype = "dashed") +
   annotate("text", x = 2.5, y = c(2, 5, 20), 
            label = c("Minimal enrichment", "Moderate enrichment","Significant enrichment"),
@@ -1834,7 +1902,7 @@ EF_plot<- ggplot(EF, aes(x = Site, y = value, fill = Metal)) +
   xlab("Site")+
   ylab("EF")+
   ggtitle("Enrichment Factor (EF)")+
-  scale_fill_discrete(name="Elemento",labels=c("Al","Cd","Fe","Hg","Pb"))+
+  scale_fill_brewer(name="Elemento",labels=c("Al","Cd","Fe","Hg","Pb"), palette = "Set3")+
   guides(fill = guide_legend(ncol = 6))+
   theme(plot.title = element_text(size = 10))+
   theme(legend.title = element_text(size = 10))+
@@ -1848,7 +1916,7 @@ EF_plot
 
 ```{r}
 CF_plot<- ggplot(CF, aes(x = Site, y = value, fill = Metal)) +
-  geom_col(position = position_dodge(width=0.8))+
+  geom_col(position = position_dodge())+
   geom_hline(yintercept = c(1, 3, 6), linetype = "dashed") +
   annotate("text", x = 2.5, y = c(1, 3, 6), 
            label = c("Low contamination", "Moderate contamination", "Considerable contamination"),
@@ -1857,7 +1925,7 @@ CF_plot<- ggplot(CF, aes(x = Site, y = value, fill = Metal)) +
   xlab("Site")+
   ylab("CF")+
   ggtitle("Contamination Factor (CF)")+
-  scale_fill_discrete(name="Elemento",labels=c("Al","Cd","Fe","Hg","Pb"))+
+  scale_fill_brewer(name="Elemento",labels=c("Al","Cd","Fe","Hg","Pb"), palette = "Set3")+
   guides(fill = guide_legend(ncol = 6))+
   theme(plot.title = element_text(size = 10))+
   theme(legend.title = element_text(size = 10))+
