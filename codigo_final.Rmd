@@ -24,7 +24,8 @@ rm(list = ls())
 ```
 
 ```{r}
-setwd("G:/Otros ordenadores/Mi portátil/Laptop Drive/Toxicología Acuática/Artículos/Evaluation of embryotoxicity/Resultados para artículo/Código Github")
+setwd("~/Código GitHub") #for work pc
+# setwd("G:/Otros ordenadores/Mi portátil/Laptop Drive/Toxicología Acuática/Artículos/Evaluation of embryotoxicity/Resultados para artículo/Código Github") #for personal PC
 ```
 
 # Embriomortality
