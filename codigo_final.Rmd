@@ -1575,6 +1575,83 @@ p<-ggplot(agua_mean[!is.na(agua_mean$promedio),], aes(x=factor(conc), y=promedio
 p
 ```
 
+## Hatching
+
+```{r}
+hatch_sed<-read_excel("Teratogénesis_R.xlsx",sheet='Eclosión sedimento')
+hatch_agua<-read_excel("Teratogénesis_R.xlsx",sheet='Eclosión agua poro')
+```
+
+### Reshaping data
+
+```{r}
+hatch_sed_long <- hatch_sed %>%
+  pivot_longer(cols = !Site,
+               names_to = 'Hour',
+               values_to = 'Hatching') %>%
+  group_by(Site, Hour) %>%
+  summarize(mean=mean(Hatching, na.rm = TRUE), 
+            stderror=std.error(Hatching, na.rm = TRUE))
+
+hatch_agua_long <- hatch_agua %>%
+  pivot_longer(cols = !Site,
+               names_to = 'Hour',
+               values_to = 'Hatching') %>%
+  group_by(Site, Hour) %>%
+  summarize(mean=mean(Hatching, na.rm = TRUE), 
+            stderror=std.error(Hatching, na.rm = TRUE))
+```
+
+### Sediment
+
+```{r}
+p1 <- ggplot(hatch_sed_long, aes(x = factor(Hour), y = mean, fill = Site))+
+  geom_col(position = position_dodge())+
+  theme(axis.line = element_line(colour = "black"))+
+  geom_errorbar(aes(ymin = mean-stderror, ymax = mean+stderror), position = position_dodge(), alpha = 0.5)+
+  xlab('Hour')+
+  ylab('Hatching rate (%)')+
+  ggtitle('Hatching rate over time in sediment')+
+  facet_grid(~Site, scales = 'free_x', space = 'free_x', switch = 'x')+
+  scale_fill_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (SR)","P3 (TR)","P4 (VM)"))+
+  scale_y_continuous(limits = c(0, 105), breaks = c(0,25,50,75,100))+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10,angle = 45,hjust=1))+
+  theme(legend.position = "bottom")+
+  theme(legend.title=element_blank())
+```
+
+### Pore water
+
+```{r}
+p2 <- ggplot(hatch_agua_long, aes(x = factor(Hour), y = mean, fill = Site))+
+  geom_col(position = position_dodge())+
+  theme(axis.line = element_line(colour = "black"))+
+  geom_errorbar(aes(ymin = mean-stderror, ymax = mean+stderror), position = position_dodge(), alpha = 0.5)+
+  xlab('Hour')+
+  ylab('Hatching rate (%)')+
+  ggtitle('Hatching rate over time in pore water')+
+  facet_grid(~Site, scales = 'free_x', space = 'free_x', switch = 'x')+
+  scale_fill_discrete(name = "Punto", labels = c("Control", "P1 (NM)", "P2 (SR)","P3 (TR)","P4 (VM)"))+
+  scale_y_continuous(limits = c(0, 105), breaks = c(0,25,50,75,100))+
+  theme(plot.title = element_text(size = 10))+
+  theme(legend.title = element_text(size = 10))+
+  theme(legend.text = element_text(size = 10))+
+  theme(axis.title = element_text(size = 10))+
+  theme(axis.text = element_text(size = 10,angle = 45,hjust=1))+
+  theme(legend.position = "bottom")+
+  theme(legend.title=element_blank())
+```
+
+```{r}
+library(patchwork)
+p1+p2
+ggsave("Figure n. Hatching rate over time.tif",width=3500,height=1500,units="px",dpi=300,compression="lzw")
+```
+
 ## GMS
 
 ### Reshaping data
