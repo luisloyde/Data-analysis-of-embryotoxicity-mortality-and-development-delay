@@ -1775,7 +1775,7 @@ terato_agua_plot
 
 ```{r}
 combined_plot <- (terato_sed_plot + terato_agua_plot) + plot_layout(guides = "collect") & theme(legend.position = "bottom")
-ggsave("Figure n. Congenital malformations frequency.tif",width=3500,height=1500,units="px",dpi=300,compression="lzw")
+ggsave("Figure n. Congenital malformations frequency in sediment and pore water.tif",width=3500,height=1500,units="px",dpi=300,compression="lzw")
 ```
 
 ## Morphological changes
