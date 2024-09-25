@@ -24,8 +24,8 @@ rm(list = ls())
 ```
 
 ```{r}
-setwd("~/Código GitHub") #for work pc
-# setwd("G:/Otros ordenadores/Mi portátil/Laptop Drive/Toxicología Acuática/Artículos/Evaluation of embryotoxicity/Resultados para artículo/Código Github") #for personal PC
+#setwd("~/Código GitHub") #for work pc
+ setwd("G:/Otros ordenadores/Mi portátil/Laptop Drive/Toxicología Acuática/Artículos/Evaluation of embryotoxicity/Resultados para artículo/Código Github") #for personal PC
 ```
 
 # Embriomortality
@@ -1456,8 +1456,8 @@ agua_mean$diff<-mortalidad_agua$diff
 ```{r}
 names<-c(C='C',
          P1='P1 (NM)',
-         P2='P2 (RS)',
-         P3='P3 (RT)',
+         P2='P2 (SR)',
+         P3='P3 (TR)',
          P4='P4 (VM)') #changing names
 ```
 
@@ -1622,6 +1622,7 @@ p1 <- ggplot(hatch_sed_long, aes(x = factor(Hour), y = mean, fill = Site))+
   theme(axis.text = element_text(size = 10,angle = 45,hjust=1))+
   theme(legend.position = "bottom")+
   theme(legend.title=element_blank())
+p1
 ```
 
 ### Pore water
